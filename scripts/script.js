@@ -13,28 +13,24 @@ async function fetchQuote() {
 }
 
 async function fetchAuthorImage(author) {
-    return new Promise((resolve, reject) => {
-        const script = document.createElement("script");
-        const callbackName = `jsonp_callback_${Date.now()}`;
+    try {
+        const response = await fetch(
+            `https://corsproxy.io/?https://en.wikipedia.org/w/api.php?action=query&format=json&prop=pageimages&titles=${encodeURIComponent(author)}&pithumbsize=200&origin=*`
+        );
+        const data = await response.json();
 
-        window[callbackName] = (data) => {
-            if (data.query?.pages) {
-                const pages = data.query.pages;
-                const pageId = Object.keys(pages)[0];
-                const imageUrl = pages[pageId].thumbnail?.source;
-                resolve(imageUrl || null);
-            } else {
-                resolve(null);
-            }
-            document.body.removeChild(script);
-            delete window[callbackName];
-        };
-
-        script.src = `https://en.wikipedia.org/w/api.php?action=query&format=json&prop=pageimages&titles=${encodeURIComponent(author)}&pithumbsize=200&callback=${callbackName}`;
-        script.onerror = () => reject(null);
-
-        document.body.appendChild(script);
-    });
+        if (data.query?.pages) {
+            const pages = data.query.pages;
+            const pageId = Object.keys(pages)[0];
+            const imageUrl = pages[pageId].thumbnail?.source;
+            return imageUrl || null;
+        } else {
+            return null;
+        }
+    } catch (error) {
+        console.error("Error fetching author image:", error);
+        return null;
+    }
 }
 
 async function fetchAuthorDetails(authorSlug) {
@@ -44,7 +40,7 @@ async function fetchAuthorDetails(authorSlug) {
             throw new Error(`Network response was not ok: ${response.status}`);
         }
         const data = await response.json();
-        return data.results[0];
+        return data.results[0]; 
     } catch (error) {
         console.error('Error fetching author details:', error);
         return null;
@@ -57,7 +53,7 @@ async function displayQuote(quote) {
     const authorImage = document.getElementById('author-image');
     const authorDescription = document.getElementById('author-description');
 
-    quoteText.textContent = `"${quote.content}"`;
+    quoteText.textContent = `${quote.content}`;
     authorLink.textContent = `— ${quote.author}`;
     authorLink.href = `https://google.com/search?q=${encodeURIComponent(quote.author)}`;
 
