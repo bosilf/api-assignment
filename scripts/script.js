@@ -1,91 +1,34 @@
 async function fetchQuote() {
     try {
-        const response = await fetch('https://api.quotable.io/random');
-        if (!response.ok) {
-            throw new Error(`Network response was not ok: ${response.status}`);
-        }
-        const data = await response.json();
-        return data;
-    } catch (error) {
-        console.error('Error fetching quote:', error);
-        return null;
-    }
-}
-
-async function fetchAuthorImage(author) {
-    try {
-        const response = await fetch(
-            `https://corsproxy.io/?https://en.wikipedia.org/w/api.php?action=query&format=json&prop=pageimages&titles=${encodeURIComponent(author)}&pithumbsize=200&origin=*`
-        );
+        const response = await fetch("https://api.quotable.io/random");
         const data = await response.json();
 
-        if (data.query?.pages) {
-            const pages = data.query.pages;
-            const pageId = Object.keys(pages)[0];
-            const imageUrl = pages[pageId].thumbnail?.source;
-            return imageUrl || null;
+        document.getElementById("quote-text").innerText = `${data.content}`;
+
+        const authorResponse = await fetch(`https://api.quotable.io/authors?slug=${data.authorSlug}`);
+        const authorData = await authorResponse.json();
+
+        if (authorData.results.length > 0) {
+            const author = authorData.results[0];
+
+            let authorLink = author.link ? author.link : `https://en.wikipedia.org/wiki/${data.author.replace(/ /g, "_")}`;
+            document.getElementById("author-link").href = authorLink;
+            document.getElementById("author-link").innerText = `- ${author.name}`;
+
+            document.getElementById("author-description").innerText = author.description || "No description available.";
+
+            document.getElementById("author-image").src = author.image || "./assets/default-author.png";
+            document.getElementById("author-image").alt = `Image of ${author.name}`;
         } else {
-            return null;
+            console.warn("No author details found for slug:", data.authorSlug);
+            document.getElementById("author-description").innerText = "No description available.";
         }
+
     } catch (error) {
-        console.error("Error fetching author image:", error);
-        return null;
+        console.error("Error fetching quote:", error);
     }
 }
 
-async function fetchAuthorDetails(authorSlug) {
-    try {
-        const response = await fetch(`https://api.quotable.io/authors?slug=${authorSlug}`);
-        if (!response.ok) {
-            throw new Error(`Network response was not ok: ${response.status}`);
-        }
-        const data = await response.json();
-        return data.results[0]; 
-    } catch (error) {
-        console.error('Error fetching author details:', error);
-        return null;
-    }
-}
+document.getElementById("get-quote-button").addEventListener("click", fetchQuote);
 
-async function displayQuote(quote) {
-    const quoteText = document.getElementById('quote-text');
-    const authorLink = document.getElementById('author-link');
-    const authorImage = document.getElementById('author-image');
-    const authorDescription = document.getElementById('author-description');
-
-    quoteText.textContent = `${quote.content}`;
-    authorLink.textContent = `— ${quote.author}`;
-    authorLink.href = `https://google.com/search?q=${encodeURIComponent(quote.author)}`;
-
-    const imageUrl = await fetchAuthorImage(quote.author);
-    if (imageUrl) {
-        authorImage.src = imageUrl;
-        authorImage.style.display = 'block';
-    } else {
-        authorImage.style.display = 'none';
-    }
-
-    const authorDetails = await fetchAuthorDetails(quote.authorSlug);
-    if (authorDetails) {
-        authorDescription.textContent = authorDetails.description || 'No description available.';
-        authorDescription.style.display = 'block';
-    } else {
-        authorDescription.style.display = 'none';
-    }
-}
-
-document.getElementById('get-quote-button').addEventListener('click', async () => {
-    const quote = await fetchQuote();
-    if (quote) {
-        await displayQuote(quote);
-    } else {
-        alert('Failed to fetch a quote. Please try again.');
-    }
-});
-
-window.onload = async () => {
-    const quote = await fetchQuote();
-    if (quote) {
-        await displayQuote(quote);
-    }
-};
+fetchQuote();
