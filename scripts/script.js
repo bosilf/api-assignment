@@ -1,6 +1,6 @@
 async function fetchQuote() {
     try {
-      const response = await fetch('http://api.quotable.io/random');
+      const response = await fetch('https://cors-anywhere.herokuapp.com/http://api.quotable.io/random');
       if (!response.ok) {
         throw new Error(`Network response was not ok: ${response.status}`);
       }
