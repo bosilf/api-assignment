@@ -12,15 +12,10 @@
     height: 100vh;
     margin: 0;
   }
-  
-  header {
-    padding: 12px 15vw;
-    text-align: center;
-  }
-  
+
   main {
     align-items: center;
-    background-image: url(../assets/tree-main.png);
+    background-image: url(../assets/main-middle-screen.png);
     background-position: bottom;
     background-repeat: no-repeat;
     background-attachment: fixed;
@@ -31,6 +26,13 @@
     justify-content: space-between;
     width: 100%;
   }
+  
+  header {
+    padding: 12px 15vw;
+    text-align: center;
+  }
+  
+
   
   .quote-content {
     background-color: #3E4A2C;
@@ -127,10 +129,20 @@
     display: grid;
     color: #d7d7d7;
   }
+
+  @media screen and (min-width: 1280px) {
+    main {
+      background-image: url(../assets/tree-main.png);
+    }
+  }
   
   @media screen and (max-width: 480px) {
     header {
         padding: 12px 10vw;
+    }
+    main {
+      background-image: url(../assets/main-smaller-screen.png);
+
     }
     .footer-border {
       height: 100px;
