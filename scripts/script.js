@@ -42,7 +42,7 @@ async function fetchQuote() {
   
   async function fetchAuthorDetails(authorSlug) {
     try {
-      const response = await fetch(`http://api.quotable.io/authors?slug=${authorSlug}`);
+      const response = await fetch(`https://api.quotable.io/authors?slug=${authorSlug}`);
       if (!response.ok) {
         throw new Error(`Network response was not ok: ${response.status}`);
       }
