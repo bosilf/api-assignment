@@ -140,11 +140,17 @@
     header {
         padding: 12px 10vw;
     }
+
     main {
       background-image: url(../assets/main-smaller-screen.png);
       background-attachment:local;
-
     }
+
+    #get-quote-button {
+      margin-top: 20px;
+      margin-bottom: 90px;
+    }
+
     .footer-border {
       height: 100px;
     }
