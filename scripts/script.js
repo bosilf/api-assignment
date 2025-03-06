@@ -1,6 +1,7 @@
 async function fetchQuote() {
     try {
-      const response = await fetch('https://cors-anywhere.herokuapp.com/http://api.quotable.io/random');      if (!response.ok) {
+      const response = await fetch('http://api.quotable.io/random');      
+      if (!response.ok) {
         throw new Error(`Network response was not ok: ${response.status}`);
       }
       const data = await response.json(); 
@@ -41,7 +42,7 @@ async function fetchQuote() {
   
   async function fetchAuthorDetails(authorSlug) {
     try {
-      const response = await fetch(`https://api.quotable.io/authors?slug=${authorSlug}`);
+      const response = await fetch(`http://api.quotable.io/authors?slug=${authorSlug}`);
       if (!response.ok) {
         throw new Error(`Network response was not ok: ${response.status}`);
       }
@@ -60,6 +61,8 @@ async function fetchQuote() {
     const authorDescription = document.getElementById('author-description');
   
     quoteText.textContent = `${quote.content}`;
+    
+
   
     authorLink.textContent = `— ${quote.author}`; 
     authorLink.href = `https://google.com/search?q=${encodeURIComponent(quote.author)}`; 
@@ -75,7 +78,7 @@ async function fetchQuote() {
     const authorDetails = await fetchAuthorDetails(quote.authorSlug);
     if (authorDetails) {
       authorDescription.textContent = authorDetails.description || 'No description available.';
-      authorDescription.style.display = 'block'; 
+      authorDescription.style.display = 'text'; 
     } else {
       authorDescription.style.display = 'none'; 
     }
